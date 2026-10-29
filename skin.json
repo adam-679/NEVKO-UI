@@ -888,6 +888,22 @@
       }
     },
 
+    "Steam Submenus": {
+      "description": "Reuses and prepares Steam submenu windows for faster opening",
+      "default": "no",
+      "tab": "UI Personalization",
+      "section": "Menus",
+      "values": {
+        "no": {},
+        "yes": {
+          "TargetJs": {
+            "affects": ["^Steam$"],
+            "src": "Patches/Steam Submenus/Steam Submenus.js"
+          }
+        }
+      }
+    },
+
     "Menu Rendering": {
       "description": "Draws menus inside the window or as separate popup windows",
       "default": "In Window",

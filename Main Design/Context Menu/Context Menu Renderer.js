@@ -30,22 +30,25 @@
     return null
   }
 
-    // Native browser hosts, including the desktop Store / Community browser.
-    function browserHostSelector(req) {
-        const selectors = new Set();
-        for (const [id, factory] of Object.entries(req.m)) {
-            const source = factory.toString();
-            if (!source.includes("BrowserViewHost:") && !source.includes("BrowserWrapper:")) continue;
-            try {
-                const classes = req(id);
-                if (classes.BrowserViewHost) selectors.add("." + CSS.escape(classes.BrowserViewHost));
-                if (classes.BrowserWrapper && classes.Browser) {
-                    selectors.add("." + CSS.escape(classes.BrowserWrapper) + " ." + CSS.escape(classes.Browser));
-                }
-            } catch {}
+  // Class names of all BrowserViewHost elements (hashed, differ per module) -> one selector
+  function browserHostSelector(req) {
+    const classes = new Set()
+    const selectors = new Set()
+    for (const [id, factory] of Object.entries(req.m)) {
+      const source = factory.toString()
+      if (!source.includes("BrowserViewHost:") && !source.includes("BrowserWrapper:")) continue
+      try {
+        const styles = req(id)
+        const name = styles.BrowserViewHost
+        if (typeof name === "string") name.split(" ").forEach(c => c && classes.add(c))
+        if (styles.BrowserWrapper && styles.Browser) {
+          selectors.add("." + CSS.escape(styles.BrowserWrapper) + " ." + CSS.escape(styles.Browser))
         }
-        return [...selectors].join(",");
+      } catch {}
     }
+    // Main window Store / Community pages also use generated class names.
+    return [...selectors, ...[...classes].map(c => "." + CSS.escape(c))].join(",")
+  }
 
   function ownerWindow(instance) {
     return instance.m_position?.element?.ownerDocument?.defaultView
@@ -75,6 +78,21 @@
     const Base = Instance && Object.getPrototypeOf(Instance.prototype)
     const getOptions = Base && Object.getOwnPropertyDescriptor(Base, "options")?.get
     if (!Manager || !getOptions) return
+
+    // Steam hides retained hover popups after a 30 ms delay. A quick return to
+    // the same header tab can reopen the menu before that old hide runs.
+    const guardedPopups = new WeakSet();
+    function guardRetainedHoverPopup(instance) {
+        const win = instance.m_popupContextMenu?.window;
+        const options = instance.m_options;
+        if (!win || guardedPopups.has(win) || !options.bRetainOnHide || !options.bNoFocusWhenShown) return;
+        const api = win.SteamClient.Window;
+        const hideWindow = api.HideWindow;
+        api.HideWindow = function (...args) {
+            if (!instance.visible) return hideWindow.apply(api, args);
+        };
+        guardedPopups.add(win);
+    }
 
     // options.bForcePopup -> false for menus we render in the page
     // No retain: in-page menu takes focus only on mount, and closes on blur (outside click)
@@ -113,6 +131,9 @@
           instance.__nkInline = inline
           if (!sub) instance.m_nKey = null
         }
+        // An inline menu must use its DOM focus, not its previous popup's focus.
+        if (inline) instance.SetPopup(undefined);
+        else guardRetainedHoverPopup(instance);
         if (inline && !sub) watchWebView(instance)
         // Not for a menu that is on screen already (Steam shows it again when its size changes): that would blink
         if (!inline && !instance.__nkTooltip && !instance.visible) replayPopupAnimation(instance)
