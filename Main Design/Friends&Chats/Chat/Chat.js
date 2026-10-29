@@ -21,6 +21,59 @@
   const TEXT_ATTR = "data-nk-text"
   const TAB_ATTR = "data-nk-tab" // the tab over an invite's cover (Chat.css)
 
+    const CHAT_CLASS_GROUPS = [
+        {
+            key: "ChatTabTransitionGroup", scope: ".ChatTabs",
+            classes: ["ChatTabTransitionGroup", "ChatTab", "ChatTabRow", "CloseButton"],
+            states: { Active: "ChatTab" },
+        },
+        {
+            key: "chatEntryControls", scope: ".chatEntry",
+            classes: [
+                "chatEntryControls", "chatTextarea", "chatEntryActionsGroup",
+                "chatEntryActionsContainer", "chatSubmitButton", "EmbedButton", "EmoticonPickerButton",
+            ],
+            states: { disabled: "chatSubmitButton" },
+        },
+        { key: "playerName", scope: ".ChatTabs", classes: ["playerName"] },
+    ];
+
+    function getChatClassBindings() {
+        let require;
+        window.opener.webpackChunksteamui.push([[Symbol("nk-chat-classes")], {}, value => { require = value; }]);
+        const bindings = [];
+        for (const group of CHAT_CLASS_GROUPS) {
+            const module = Object.keys(require.m).find(id => {
+                const source = require.m[id].toString();
+                return source.includes(".exports={") && source.includes(group.key + ":");
+            });
+            const classes = require(module);
+            for (const themeClass of group.classes) {
+                const steamClass = classes[themeClass];
+                const selector = `${group.scope} .${CSS.escape(steamClass)}`;
+                bindings.push({ steamClass, themeClass, selector });
+            }
+            // State names such as Active belong only to their matching control.
+            // Inspect all such controls so a removed state also removes its alias.
+            for (const [themeClass, control] of Object.entries(group.states || {})) {
+                const steamClass = classes[themeClass];
+                const selector = `${group.scope} .${CSS.escape(classes[control])}`;
+                bindings.push({ steamClass, themeClass, selector });
+            }
+        }
+        return bindings;
+    }
+
+    const chatClassBindings = getChatClassBindings();
+
+    function markChatClasses() {
+        for (const { steamClass, themeClass, selector } of chatClassBindings) {
+            for (const element of document.querySelectorAll(selector)) {
+                element.classList.toggle(themeClass, element.classList.contains(steamClass));
+            }
+        }
+    }
+
 
   // Game Invites
 
@@ -2688,6 +2741,7 @@
   function schedule() {
     frame ??= requestAnimationFrame(() => {
       frame = null
+      markChatClasses();
       markInvites()
       markEffects()
       markStickerBlocks()
@@ -2722,6 +2776,7 @@
   }
 
   function init() {
+    markChatClasses();
     markInvites()
     markEffects()
     markEntryHeight()
