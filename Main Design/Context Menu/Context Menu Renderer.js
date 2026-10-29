@@ -156,6 +156,7 @@
     }
 
     patchPopupPosition(req)
+    patchPopupTransparency(req);
 
     // Fast moves over submenu items: the menu loses focus for a moment and Steam closes it
     // (overlay windows lose focus even more often). Cursor over the menu -> keep it
@@ -234,6 +235,23 @@
       finally { delete this.setState }
     }
   }
+
+    // CSS transparency needs a composited native window. Steam omits this flag
+    // for Linux menu popups, which turns their transparent corners black.
+    function patchPopupTransparency(req) {
+        const Popup = findClass(req, "TransparentParentWindow", ["Show", "UpdateParamsBeforeShow", "RenderInternal"]);
+        const module = Object.keys(req.m).find(id => req.m[id].toString().includes("TransparentParentWindow="));
+        const flags = module && Object.values(req(module)).find(value => typeof value?.Composited === "number");
+        if (!Popup || !flags) return;
+
+        const show = Popup.prototype.Show;
+        Popup.prototype.Show = function (...args) {
+            if (this.params.body_class?.split(" ").includes("ContextMenuPopupBody")) {
+                this.params.eCreationFlags |= flags.Composited;
+            }
+            return show.apply(this, args);
+        };
+    }
 
   try { patch() } catch {}
 })()
