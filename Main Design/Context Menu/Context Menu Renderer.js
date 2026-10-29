@@ -30,19 +30,22 @@
     return null
   }
 
-  // Class names of all BrowserViewHost elements (hashed, differ per module) -> one selector
-  function browserHostSelector(req) {
-    const classes = new Set()
-    for (const [id, factory] of Object.entries(req.m)) {
-      if (!factory.toString().includes("BrowserViewHost:")) continue
-      try {
-        const name = req(id)?.BrowserViewHost
-        if (typeof name === "string") name.split(" ").forEach(c => c && classes.add(c))
-      } catch {}
+    // Native browser hosts, including the desktop Store / Community browser.
+    function browserHostSelector(req) {
+        const selectors = new Set();
+        for (const [id, factory] of Object.entries(req.m)) {
+            const source = factory.toString();
+            if (!source.includes("BrowserViewHost:") && !source.includes("BrowserWrapper:")) continue;
+            try {
+                const classes = req(id);
+                if (classes.BrowserViewHost) selectors.add("." + CSS.escape(classes.BrowserViewHost));
+                if (classes.BrowserWrapper && classes.Browser) {
+                    selectors.add("." + CSS.escape(classes.BrowserWrapper) + " ." + CSS.escape(classes.Browser));
+                }
+            } catch {}
+        }
+        return [...selectors].join(",");
     }
-    // + main window store / community page: div.Browser inside div.BrowserWrapper
-    return [".BrowserWrapper .Browser", ...[...classes].map(c => "." + CSS.escape(c))].join(",")
-  }
 
   function ownerWindow(instance) {
     return instance.m_position?.element?.ownerDocument?.defaultView

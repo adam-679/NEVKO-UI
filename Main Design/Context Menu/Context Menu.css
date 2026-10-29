@@ -6,8 +6,8 @@
 }
 
 /* Popup Window */
-html.ContextMenuPopup.ContextMenuPopup,
-html.ContextMenuPopup.ContextMenuPopup body {
+html:has(> body.ContextMenuPopupBody),
+html:has(> body.ContextMenuPopupBody) body {
 	background: transparent !important;
 }
 
@@ -172,7 +172,7 @@ html.ContextMenuPopup.ContextMenuPopup body {
 }
 
 /* Header Menus Offset */
-html:not(.ContextMenuPopup) .PP7LM0Ow1K5qkR8WElLpt:has(> ._3pofGqV0buiKAfMPEs3_82) {
+html:not(:has(> body.ContextMenuPopupBody)) .PP7LM0Ow1K5qkR8WElLpt:has(> ._3pofGqV0buiKAfMPEs3_82) {
 	margin-top: 4px;
 }
 
@@ -183,14 +183,13 @@ html:not(.ContextMenuPopup) .PP7LM0Ow1K5qkR8WElLpt:has(> ._3pofGqV0buiKAfMPEs3_8
 		transform: scale(.95);
 	}
 }
-html.ContextMenuPopup ._2EstNjFIIZm_WUSKm5Wt7n,
-html:not(.ContextMenuPopup) .PP7LM0Ow1K5qkR8WElLpt.visible {
+/* Steam measures the outer menu to size its window. Animate only its contents. */
+.PP7LM0Ow1K5qkR8WElLpt.visible > ._2EstNjFIIZm_WUSKm5Wt7n {
 	transform-origin: 50% 0;
 	animation: nk-menu-in .14s cubic-bezier(.2, .8, .3, 1) both;
 }
 @media (prefers-reduced-motion: reduce) {
-	html.ContextMenuPopup ._2EstNjFIIZm_WUSKm5Wt7n,
-	html:not(.ContextMenuPopup) .PP7LM0Ow1K5qkR8WElLpt.visible {
+	.PP7LM0Ow1K5qkR8WElLpt.visible > ._2EstNjFIIZm_WUSKm5Wt7n {
 		animation: none;
 	}
 }
