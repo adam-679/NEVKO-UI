@@ -888,6 +888,22 @@
       }
     },
 
+    "Safe Triangle": {
+      "description": "Keeps a submenu open while the pointer moves diagonally toward it",
+      "default": "yes",
+      "tab": "UI Personalization",
+      "section": "Menus",
+      "values": {
+        "no": {},
+        "yes": {
+          "TargetJs": {
+            "affects": ["^Steam$"],
+            "src": "Patches/Safe Triangle/Safe Triangle.js"
+          }
+        }
+      }
+    },
+
     "Steam Submenus": {
       "description": "Reuses and prepares Steam submenu windows for faster opening",
       "default": "no",
