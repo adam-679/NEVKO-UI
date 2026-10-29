@@ -2,23 +2,33 @@
 
 /* Header */
 :where(.MillenniumWindow_MainSteamWindow, .MillenniumWindow_MainSteamWindow *) {
+	&._3yD46y5pd3zOGR7CzKs0mC {
+		--account-button-background: color-mix(in srgb, #67707b 20%, var(--main-background));
+		background-color: var(--account-button-background);
+	}
 	&._3yD46y5pd3zOGR7CzKs0mC.ingame {
-		background-color: var(--ingame-background);
+		--account-button-background: color-mix(in srgb, var(--status-playing) 35%, var(--main-background));
+		background-color: var(--account-button-background);
 	}
 	&._3yD46y5pd3zOGR7CzKs0mC:hover {
-		background-color: var(--status-offline-tint);
+		--account-button-background: color-mix(in srgb, var(--status-offline) 20%, var(--main-background));
+		background-color: var(--account-button-background);
 	}
 	&._3yD46y5pd3zOGR7CzKs0mC.online:hover {
-		background-color: var(--status-online-tint);
+		--account-button-background: color-mix(in srgb, var(--status-online) 20%, var(--main-background));
+		background-color: var(--account-button-background);
 	}
 	&._3yD46y5pd3zOGR7CzKs0mC.awayOrSnooze:hover {
-		background-color: var(--status-afk-tint);
+		--account-button-background: color-mix(in srgb, var(--status-afk) 20%, var(--main-background));
+		background-color: var(--account-button-background);
 	}
 	&._3yD46y5pd3zOGR7CzKs0mC.ingame:hover {
-		background-color: var(--status-playing-tint);
+		--account-button-background: color-mix(in srgb, var(--status-playing) 20%, var(--main-background));
+		background-color: var(--account-button-background);
 	}
 	&._3yD46y5pd3zOGR7CzKs0mC.ingame.awayOrSnooze:hover {
-		background-color: var(--status-playing-afk-tint);
+		--account-button-background: color-mix(in srgb, var(--status-playing-afk) 20%, var(--main-background));
+		background-color: var(--account-button-background);
 	}
 	&._3yD46y5pd3zOGR7CzKs0mC {
 		color: var(--status-offline);

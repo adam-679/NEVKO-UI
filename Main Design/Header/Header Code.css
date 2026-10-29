@@ -129,10 +129,12 @@
 ._7AlhCx3XGzBeIrQaCneUD:nth-of-type(4)._1gqEjB5QsKT_NftD1dEsdZ:not(._2cO0HdvLEGAdhosLekWsmo) ._19axKcqYRuaJ8vdYKYmtTQ {
 	text-transform: math-auto !important;
 }
-._3cykd-VfN_xBxf3Qxriccm ._3yD46y5pd3zOGR7CzKs0mC div:nth-of-type(2) {
+._3cykd-VfN_xBxf3Qxriccm ._3yD46y5pd3zOGR7CzKs0mC > div:nth-of-type(2) {
+	min-width: 0;
 	max-width: 115px;
 	overflow: hidden;
 	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 /* Extra Buttons */

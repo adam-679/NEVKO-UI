@@ -20,7 +20,8 @@
 		color: var(--text-muted-color);
 	}
 	&._3yD46y5pd3zOGR7CzKs0mC ._2jphjrSifC6orDT4g_7Wd {
-		color: var(--text-muted-color);
+		/* Black/white contrast crosses near Lab lightness 49.4. */
+		color: lab(from var(--account-button-background) clamp(0, (49.4 - l) * 1000, 100) 0 0);
 	}
 	&.RtSv39ZoBOySnb8XQ5hJf._3qhGkQ5qLVNQQ-J2-uPoHt:not(._1QQWjaXmb1eTHZpeIhQA_5):hover ._34bQcTHo5QKzuujoEyU1tm {
 		color: var(--text-bright-color);
